@@ -23,11 +23,6 @@ public class LectureController {
 
     private final LectureFacade lectureFacade;
 
-    /**
-     * 날짜별로 수강신청 가능한 강의 찾는 API
-     * @param lectureAt
-     * @return
-     */
     @GetMapping("/api/v1/Lectures")
     public ApiResponse<List<LectureResponseDto.LectureResponse>> getAllAvailableLectures(@RequestParam("lectureAt")
                                                                                          @DateTimeFormat(pattern = "yyyyMMdd") LocalDate lectureAt) {
