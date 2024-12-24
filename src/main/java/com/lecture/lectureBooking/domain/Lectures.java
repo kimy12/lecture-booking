@@ -25,6 +25,7 @@ public class Lectures {
 
     private String lecturer;
 
+    @Enumerated(EnumType.STRING)
     private LectureBookingStatus status;
 
     private int memberCount;

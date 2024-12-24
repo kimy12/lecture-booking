@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 
 public class LectureResponseDto {
     @Builder
-    public record LectureResponse(
+    public record AvailableLectures(
             long id,
             String title,
             String lecturer,
@@ -15,6 +15,16 @@ public class LectureResponseDto {
             LocalDateTime lectureAt,
             LocalDateTime startAt,
             LocalDateTime endAt
+    ) {
+    }
+
+    @Builder
+    public record BookedLectures(
+            long id,
+            String title,
+            String lecturer,
+            LocalDateTime lectureAt,
+            LocalDateTime createdAt
     ) {
     }
 }
