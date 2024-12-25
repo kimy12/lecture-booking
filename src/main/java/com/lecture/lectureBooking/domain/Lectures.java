@@ -2,12 +2,10 @@ package com.lecture.lectureBooking.domain;
 
 import com.lecture.lectureBooking.presentation.dto.LectureResponseDto;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -36,11 +34,19 @@ public class Lectures {
 
     private LocalDateTime endAt;
 
-    @OneToMany(mappedBy = "lecture")
-    private List<LectureMembers> members;
+    @OneToMany(mappedBy = "lecture", cascade = CascadeType.ALL)
+    @Setter
+    private List<LectureMembers> members = new ArrayList<>();
 
     @Builder
-    private Lectures (String title, String lecturer, LectureBookingStatus status, LocalDateTime lectureAt, LocalDateTime startAt, LocalDateTime endAt, int memberCount) {
+    private Lectures (String title,
+                      String lecturer,
+                      LectureBookingStatus status,
+                      LocalDateTime lectureAt,
+                      LocalDateTime startAt,
+                      LocalDateTime endAt,
+                      int memberCount,
+                      List<LectureMembers> members) {
         this.title = title;
         this.lecturer = lecturer;
         this.status = status;
@@ -48,6 +54,12 @@ public class Lectures {
         this.startAt = startAt;
         this.endAt = endAt;
         this.memberCount = memberCount;
+        this.members = members;
+    }
+
+    public void addMember(LectureMembers member) {
+        this.members.add(member);
+        member.setLecture(this);
     }
 
 }

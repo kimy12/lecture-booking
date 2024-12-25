@@ -1,5 +1,6 @@
 package com.lecture.lectureBooking.application.facade;
 
+import com.lecture.lectureBooking.application.service.LectureMemberService;
 import com.lecture.lectureBooking.application.service.LectureService;
 import com.lecture.lectureBooking.domain.LectureMembers;
 import com.lecture.lectureBooking.domain.Lectures;
@@ -13,12 +14,13 @@ import java.util.List;
 @RequiredArgsConstructor
 public class LectureFacade {
     private final LectureService lectureService;
+    private final LectureMemberService lectureMemberService;
 
     public List<Lectures> showAllAvailableLectures(LocalDate lectureAt) {
         return lectureService.getAllAvailableLectures(lectureAt);
     }
 
     public List<LectureMembers> showBookedLectures(long userId) {
-        return lectureService.getAllBookedLecturesByUser(userId);
+        return lectureMemberService.getAllBookedLecturesByUser(userId);
     }
 }

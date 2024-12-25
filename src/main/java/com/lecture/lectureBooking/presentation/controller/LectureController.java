@@ -23,23 +23,24 @@ public class LectureController {
     private final LectureFacade lectureFacade;
 
     @GetMapping("/api/v1/lectures")
-    public ApiResponse<List<LectureResponseDto.AvailableLectures>> getAllAvailableLectures(@RequestParam("lectureAt")
-                                                                                           @DateTimeFormat(pattern = "yyyyMMdd") LocalDate lectureAt) {
-        List<Lectures> lectures = lectureFacade.showAllAvailableLectures(lectureAt);
+    public ApiResponse<List<LectureResponseDto.AvailableLectures>> getAllAvailableLectures(
+            @ModelAttribute LectureRequestDto.LectureRequest request) {
+
+        List<Lectures> lectures = lectureFacade.showAllAvailableLectures(request.lectureAt());
 
         if (lectures == null || lectures.isEmpty()) {
             return ApiResponse.of(HttpStatus.NO_CONTENT, null);
         }
 
         return ApiResponse.ok(lectures.stream()
-                .map(c -> LectureResponseDto.AvailableLectures.builder()
-                .id(c.getId())
-                .title(c.getTitle())
-                .status(c.getStatus())
-                .lecturer(c.getLecturer())
-                .lectureAt(c.getLectureAt())
-                .startAt(c.getStartAt())
-                .endAt(c.getEndAt())
+                .map(l -> LectureResponseDto.AvailableLectures.builder()
+                .id(l.getId())
+                .title(l.getTitle())
+                .status(l.getStatus())
+                .lecturer(l.getLecturer())
+                .lectureAt(l.getLectureAt())
+                .startAt(l.getStartAt())
+                .endAt(l.getEndAt())
                 .build())
                 .toList());
     }

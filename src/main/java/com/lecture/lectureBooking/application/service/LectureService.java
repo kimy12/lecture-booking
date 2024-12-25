@@ -20,13 +20,9 @@ public class LectureService {
 
     private final LectureRepository lectureRepository;
 
-    private final LectureMemberRepository lectureMemberRepository;
-
     public List<Lectures> getAllAvailableLectures(LocalDate lectureAt) {
         return lectureRepository.findLecturesAllBy(lectureAt, LectureBookingStatus.AVAILABLE);
     }
 
-    public List<LectureMembers> getAllBookedLecturesByUser(long userId) {
-        return lectureMemberRepository.findByLectureId(userId);
-    }
+
 }

@@ -1,13 +1,14 @@
 package com.lecture.lectureBooking.presentation.dto;
 
 
-import jakarta.validation.constraints.*;
+import org.springframework.format.annotation.DateTimeFormat;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 public class LectureRequestDto {
     public record LectureRequest(
-            LocalDateTime lectureAt
+            @DateTimeFormat(pattern = "yyyyMMdd")
+            LocalDate lectureAt
     ) { }
     public record BookedLectureByUser(
             long userId

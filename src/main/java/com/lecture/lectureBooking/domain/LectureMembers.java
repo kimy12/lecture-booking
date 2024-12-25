@@ -1,10 +1,7 @@
 package com.lecture.lectureBooking.domain;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
@@ -19,7 +16,8 @@ public class LectureMembers {
 
     private long userId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @Setter
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "lecture_id")
     private Lectures lecture;
 
@@ -32,4 +30,5 @@ public class LectureMembers {
         this.lecture = lecture;
         this.createdAt = createdAt;
     }
+
 }
