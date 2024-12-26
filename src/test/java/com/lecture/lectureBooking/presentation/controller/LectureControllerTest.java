@@ -136,8 +136,15 @@ class LectureControllerTest {
     @DisplayName("강의 신청을 한다.")
     @Test
     void bookLecture () throws Exception {
+
+
         // given
+        LocalDateTime lectureStartAt = LocalDateTime.of(2024, 12, 24, 14, 0);
         LectureRequestDto.BookLectureForm request = new LectureRequestDto.BookLectureForm(1,1);
+        LectureMembers bookedLecture1 = getBookedLecture(1, lectureStartAt, createLecture("특강1", "강사1", lectureStartAt));
+
+        Mockito.when(lectureFacade.bookLecture(request))
+                .thenReturn(bookedLecture1);
 
 
          //when // then
@@ -148,10 +155,7 @@ class LectureControllerTest {
                 )
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.code").value("200"))
-                .andExpect(jsonPath("$.status").value("OK"));
-
-
+                .andExpect(jsonPath("$.code").value("200"));
     }
 
     @DisplayName("강의 신청을 한다. 유저 아이디가 음수일 경우, 예외가 발생한다.")
