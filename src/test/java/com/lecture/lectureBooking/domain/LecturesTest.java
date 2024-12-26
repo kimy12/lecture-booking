@@ -9,7 +9,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class LecturesTest {
 
-    @DisplayName("신청인원이 초과되면 예외가 발생한다.")
+    @DisplayName("신청인원이 30명 미만이면 신청된 인원 수가 1 올라간다.")
     @Test
     void addLectureMemberNumber() {
         // given
