@@ -14,7 +14,15 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
@@ -129,6 +137,85 @@ class LectureServiceTest {
         // then
         assertThat(e.getMessage()).isEqualTo("존재하지 않는 강의 입니다.");
 
+    }
+
+    @DisplayName("40명 동시에 같은 강의 신청 시 30명만 예약에 성공하고 나머지 10명은 실패한다.")
+    @Test
+    void ppl40TryToBookingLectures () throws InterruptedException {
+        // given
+        int memberCount = 40;
+        LocalDateTime lectureStartAt = LocalDateTime.of(2024, 12, 29, 14, 0);
+        Lectures availableLecture1 = createLecture("특강1", "강사1", lectureStartAt);
+        Lectures savedLecture = lectureRepository.save(availableLecture1);
+
+        System.out.println("Lecture ID: " + savedLecture.getId());
+
+        AtomicInteger successCount = new AtomicInteger();
+        AtomicInteger failCount = new AtomicInteger();
+
+        ExecutorService executorsService = Executors.newFixedThreadPool(memberCount);
+        CountDownLatch latch = new CountDownLatch(memberCount);
+
+        // when
+        for (int i = 0; i < memberCount; i++) {
+            long userId = i + 1;
+            executorsService.submit(() -> {
+                try {
+                    lectureService.bookLecture(new LectureRequestDto.BookLectureForm(userId, savedLecture.getId()));
+                    successCount.incrementAndGet();
+                } catch (Exception e) {
+                    System.out.println("Error: " + e.getMessage());
+                    failCount.incrementAndGet();
+                } finally {
+                    latch.countDown();
+                }
+            });
+        }
+        latch.await();
+        executorsService.shutdown();
+
+        // then
+        assertThat(successCount.get()).isEqualTo(30);
+        assertThat(failCount.get()).isEqualTo(10);
+    }
+
+    @DisplayName("5개의 같은 아이디가 중복 신청을 하는경우, 1개성공, 4개는 실패한다.")
+    @Test
+    void booking5sameLectureInSameTime () throws InterruptedException {
+        // given
+        int memberCount = 5;
+        LocalDateTime lectureStartAt = LocalDateTime.of(2024, 12, 29, 14, 0);
+        Lectures availableLecture1 = createLecture("특강1", "강사1", lectureStartAt);
+        Lectures savedLecture = lectureRepository.save(availableLecture1);
+
+        System.out.println("Lecture ID: " + savedLecture.getId());
+
+        AtomicInteger successCount = new AtomicInteger();
+        AtomicInteger failCount = new AtomicInteger();
+
+        ExecutorService executorsService = Executors.newFixedThreadPool(memberCount);
+        CountDownLatch latch = new CountDownLatch(memberCount);
+
+        // when
+        for (int i = 0; i < memberCount; i++) {
+            executorsService.submit(() -> {
+                try {
+                    lectureService.bookLecture(new LectureRequestDto.BookLectureForm(100L, savedLecture.getId()));
+                    successCount.incrementAndGet();
+                } catch (Exception e) {
+                    System.out.println("Error: " + e.getMessage());
+                    failCount.incrementAndGet();
+                } finally {
+                    latch.countDown();
+                }
+            });
+        }
+        latch.await();
+        executorsService.shutdown();
+
+        // then
+        assertThat(successCount.get()).isEqualTo(1);
+        assertThat(failCount.get()).isEqualTo(4);
     }
 
     private static LectureMembers createLectureMember(LocalDateTime lectureStartAt, long userId, Lectures lectures) {
