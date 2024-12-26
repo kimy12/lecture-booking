@@ -23,9 +23,6 @@ public class Lectures {
 
     private String lecturer;
 
-    @Enumerated(EnumType.STRING)
-    private LectureBookingStatus status;
-
     private int memberCount;
 
     private LocalDateTime lectureAt;
@@ -41,7 +38,6 @@ public class Lectures {
     @Builder
     private Lectures (String title,
                       String lecturer,
-                      LectureBookingStatus status,
                       LocalDateTime lectureAt,
                       LocalDateTime startAt,
                       LocalDateTime endAt,
@@ -49,7 +45,6 @@ public class Lectures {
                       List<LectureMembers> members) {
         this.title = title;
         this.lecturer = lecturer;
-        this.status = status;
         this.lectureAt = lectureAt;
         this.startAt = startAt;
         this.endAt = endAt;
@@ -60,6 +55,23 @@ public class Lectures {
     public void addMember(LectureMembers member) {
         this.members.add(member);
         member.setLecture(this);
+    }
+
+    public void addMemberCount () {
+        if(this.memberCount >= 30) {
+            throw new IllegalArgumentException("신청인원이 초과된 강의입니다.");
+        }
+        this.memberCount += 1;
+    }
+
+    public void checkLectureSchedules(){
+        if(this.lectureAt.isBefore(LocalDateTime.now())){
+            throw new IllegalArgumentException("이미 종료한 강의입니다.");
+        }
+
+        if(this.startAt.isAfter(LocalDateTime.now()) || this.endAt.isBefore(LocalDateTime.now())){
+            throw new IllegalArgumentException("강의 신청기간이 아닙니다.");
+        }
     }
 
 }

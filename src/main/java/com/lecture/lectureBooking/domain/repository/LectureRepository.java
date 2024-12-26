@@ -1,14 +1,16 @@
 package com.lecture.lectureBooking.domain.repository;
 
-import com.lecture.lectureBooking.domain.LectureBookingStatus;
 import com.lecture.lectureBooking.domain.Lectures;
+import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface LectureRepository extends JpaRepository<Lectures, Long> {
@@ -16,6 +18,8 @@ public interface LectureRepository extends JpaRepository<Lectures, Long> {
     @Query("select l " +
             "from Lectures l " +
             "where DATE(l.lectureAt) = :lectureAt " +
-            "and l.status= :status")
-    List<Lectures> findLecturesAllBy(@Param("lectureAt") LocalDate lectureAt, LectureBookingStatus status);
+            "and l.memberCount < 30")
+    List<Lectures> findLecturesAllBy(@Param("lectureAt") LocalDate lectureAt);
+
+    Optional<Lectures> findLectureById(Long id);
 }

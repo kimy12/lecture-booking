@@ -17,7 +17,7 @@ public class LectureMembers {
     private long userId;
 
     @Setter
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "lecture_id")
     private Lectures lecture;
 

@@ -7,6 +7,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface LectureMemberRepository extends JpaRepository<LectureMembers, Long> {
@@ -15,5 +16,7 @@ public interface LectureMemberRepository extends JpaRepository<LectureMembers, L
             "from LectureMembers lm " +
             "join fetch lm.lecture l " +
             "where lm.userId= :userId")
-    List<LectureMembers> findByLectureId(@Param("userId")Long userId);
+    List<LectureMembers> findByUserId(@Param("userId")Long userId);
+
+    Optional<LectureMembers> findByLectureIdAndUserId(long lectureId, long userId);
 }

@@ -7,6 +7,7 @@ import com.lecture.lectureBooking.domain.LectureMembers;
 import com.lecture.lectureBooking.domain.Lectures;
 import com.lecture.lectureBooking.presentation.dto.LectureRequestDto;
 import com.lecture.lectureBooking.presentation.dto.LectureResponseDto;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -36,7 +37,6 @@ public class LectureController {
                 .map(l -> LectureResponseDto.AvailableLectures.builder()
                 .id(l.getId())
                 .title(l.getTitle())
-                .status(l.getStatus())
                 .lecturer(l.getLecturer())
                 .lectureAt(l.getLectureAt())
                 .startAt(l.getStartAt())
@@ -62,6 +62,18 @@ public class LectureController {
                 .createdAt(l.getCreatedAt())
                 .build())
                 .toList());
+    }
+
+    @PostMapping("/api/v1/bookLecture")
+    public ApiResponse<LectureResponseDto.SuccessedBookLectures> bookLectures
+            (@Valid @RequestBody LectureRequestDto.BookLectureForm request) {
+        LectureMembers bookedLectureInfo = lectureFacade.bookLecture(request);
+        return ApiResponse.ok(LectureResponseDto.SuccessedBookLectures
+                .builder()
+                .createAt(bookedLectureInfo.getCreatedAt())
+                .lectureId(bookedLectureInfo.getLecture().getId())
+                .userId(bookedLectureInfo.getUserId())
+                .build());
     }
 
 }

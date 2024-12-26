@@ -1,6 +1,5 @@
 package com.lecture.lectureBooking.presentation.dto;
 
-import com.lecture.lectureBooking.domain.LectureBookingStatus;
 import lombok.Builder;
 
 import java.time.LocalDateTime;
@@ -11,7 +10,6 @@ public class LectureResponseDto {
             long id,
             String title,
             String lecturer,
-            LectureBookingStatus status,
             LocalDateTime lectureAt,
             LocalDateTime startAt,
             LocalDateTime endAt
@@ -25,6 +23,14 @@ public class LectureResponseDto {
             String lecturer,
             LocalDateTime lectureAt,
             LocalDateTime createdAt
+    ) {
+    }
+
+    @Builder
+    public record SuccessedBookLectures(
+            long userId,
+            long lectureId,
+            LocalDateTime createAt
     ) {
     }
 }

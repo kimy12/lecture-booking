@@ -2,15 +2,15 @@ package com.lecture.lectureBooking.presentation.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lecture.lectureBooking.application.facade.LectureFacade;
-import com.lecture.lectureBooking.application.service.LectureService;
-import com.lecture.lectureBooking.domain.LectureBookingStatus;
 import com.lecture.lectureBooking.domain.LectureMembers;
 import com.lecture.lectureBooking.domain.Lectures;
+import com.lecture.lectureBooking.presentation.dto.LectureRequestDto;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -18,7 +18,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static com.lecture.lectureBooking.domain.LectureBookingStatus.AVAILABLE;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -133,6 +133,65 @@ class LectureControllerTest {
         ;
     }
 
+    @DisplayName("강의 신청을 한다.")
+    @Test
+    void bookLecture () throws Exception {
+        // given
+        LectureRequestDto.BookLectureForm request = new LectureRequestDto.BookLectureForm(1,1);
+
+
+         //when // then
+        mockMvc.perform(
+                        post("/lecture/api/v1/bookLecture")
+                                .content(objectMapper.writeValueAsString(request))
+                                .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value("200"))
+                .andExpect(jsonPath("$.status").value("OK"));
+
+
+    }
+
+    @DisplayName("강의 신청을 한다. 유저 아이디가 음수일 경우, 예외가 발생한다.")
+    @Test
+    void bookLectureWrongWithUserId () throws Exception {
+        // given
+        LectureRequestDto.BookLectureForm request = new LectureRequestDto.BookLectureForm(-1,1);
+
+        //when // then
+        mockMvc.perform(
+                        post("/lecture/api/v1/bookLecture")
+                                .content(objectMapper.writeValueAsString(request))
+                                .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.data").value("잘못된 유저 아이디 입니다."));
+
+
+    }
+
+    @DisplayName("강의 신청을 한다. 강의 아이디가 음수일 경우, 예외가 발생한다.")
+    @Test
+    void bookLectureWrongWithLectureId () throws Exception {
+        // given
+        LectureRequestDto.BookLectureForm request = new LectureRequestDto.BookLectureForm(1,-1);
+
+        //when // then
+        mockMvc.perform(
+                        post("/lecture/api/v1/bookLecture")
+                                .content(objectMapper.writeValueAsString(request))
+                                .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.data").value("잘못된 강의 정보 입니다."));
+
+
+    }
+
     private static LectureMembers getBookedLecture(long id,LocalDateTime lectureStartAt, Lectures lecture) {
         return LectureMembers.builder()
                 .userId(id)
@@ -146,7 +205,6 @@ class LectureControllerTest {
                 .title(title)
                 .lecturer(lecturer)
                 .lectureAt(lectureAt)
-                .status(AVAILABLE)
                 .build();
     }
 
