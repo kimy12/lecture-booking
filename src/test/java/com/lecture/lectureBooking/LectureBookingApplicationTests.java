@@ -1,4 +1,4 @@
-package com.lecture.lecture_booking;
+package com.lecture.lectureBooking;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
